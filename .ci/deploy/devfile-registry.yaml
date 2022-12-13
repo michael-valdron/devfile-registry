@@ -55,8 +55,6 @@ objects:
               items:
                 - key: .env.registry-viewer
                   path: .env.local
-          - name: viewer-public
-            emptyDir: {}
         containers:
         - image: ${DEVFILE_INDEX_IMAGE}:${IMAGE_TAG}
           imagePullPolicy: "${DEVFILE_INDEX_PULL_POLICY}"
@@ -143,13 +141,14 @@ objects:
             limits:
               cpu: 250m
               memory: ${REGISTRY_VIEWER_MEMORY_LIMIT}
-          volumeMounts:
-            - name: viewer-env-file
-              mountPath: /app/apps/registry-viewer/.env.local
-              subPath: .env.local
-              readOnly: true
-            - name: viewer-public
-              mountPath: /app/apps/registry-viewer/public
+          env:
+            - name: NEXT_PUBLIC_BASE_PATH
+              value: "/viewer"
+            - name: NEXT_PUBLIC_DEVFILE_REGISTRIES
+              valueFrom:
+                configMapKeyRef:
+                  key: devfile-registry-hosts.json
+                  name: devfile-registry
         - image: ${OCI_REGISTRY_IMAGE}:${OCI_REGISTRY_IMAGE_TAG}
           imagePullPolicy: "${OCI_REGISTRY_PULL_POLICY}"
           name: oci-registry
@@ -236,10 +235,13 @@ objects:
           prometheus:
             enabled: true
             path: /metrics
-
-    .env.registry-viewer: |
-      ANALYTICS_WRITE_KEY=${ANALYTICS_WRITE_KEY}
-      DEVFILE_REGISTRIES=[{"name":"Community","url":"http://localhost:8080","fqdn":"${REGISTRY_HOST_ALIAS}"}]
+    devfile-registry-hosts.json: |
+      [
+        { 
+          "name": "Community", 
+          "url": "http://localhost:8080" 
+        }
+      ]
 
 - apiVersion: v1
   kind: ServiceAccount
