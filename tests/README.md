@@ -1,5 +1,29 @@
 # Devfile Registry Testing
 
+## Dependency check
+
+### Prerequisites
+
+- Ensure [yq 4.x](https://github.com/mikefarah/yq/#install) is installed
+
+### Running the build script
+
+- This script performs three actions
+  - Clones samples from provided `extraDevfileEntries.yaml` under `samples/.cache`
+  - Creates a `parents.yaml` which contains the dependency tree for parent stacks
+  - Outputs the child sample paths of parent stacks, `TEST_DELTA=true` will result in only outputting child samples which have changed parent stacks
+- The build script takes one optional argument and works off of the current working directory
+  - `bash tests/build_parents_file.sh`, default samples file is `extraDevfileEntries.yaml`
+  - `bash tests/build_parents_file.sh <path_to_extraDevfileEntries>`
+
+### Use with testing
+
+- One can test the child samples using the [validate_devfile_schemas](./validate_devfile_schemas/) test suite by performing the following:
+```sh
+export STACKS=$(bash tests/build_parents_file.sh)
+STACKS_DIR=.cache/samples bash tests/validate_devfile_schemas.sh --samples
+```
+
 ## Validating non-terminating images
 
 ### Prerequisites
@@ -29,7 +53,7 @@
     - `minikube start --memory 8gb` is a good starting point.
     - The `none` driver **cannot** be used. Any other driver (`docker`, `hyperkit`, etc) should suffice.
 - odo v3.0.0-rc2 or later.
-- Go 1.19 or later installed
+- Go 1.21 or later installed
   - `$GOPATH/bin` should be in your `$PATH` or you will have to modify `check_with_odov3.sh` to find `ginkgo` binary.
 - Ginkgo CLI installed (`go install github.com/onsi/ginkgo/v2/ginkgo@latest`)
 

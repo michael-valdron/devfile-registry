@@ -2,7 +2,7 @@ schemaVersion: 2.2.0
 metadata:
   name: java-springboot
   displayName: Spring Boot®
-  description: Java application using Spring Boot® and OpenJDK 11
+  description: Java application using Spring Boot® and OpenJDK 17
   icon: https://raw.githubusercontent.com/devfile-samples/devfile-stack-icons/main/spring.svg
   tags:
     - Java
@@ -15,11 +15,11 @@ starterProjects:
   - name: springbootproject
     git:
       remotes:
-        origin: "https://github.com/odo-devfiles/springboot-ex.git"
+        origin: "https://github.com/devfile-samples/springboot-ex.git"
 components:
   - name: tools
     container:
-      image: registry.access.redhat.com/ubi9/openjdk-17:1.17-1.1705573248
+      image: registry.access.redhat.com/ubi9/openjdk-17:1.20-2.1721752931
       command: ['tail', '-f', '/dev/null']
       memoryLimit: 768Mi
       mountSources: true
